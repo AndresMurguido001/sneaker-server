@@ -54,6 +54,7 @@ export const refreshTokens = async (
     SECRET,
     refreshSecret
   );
+
   return {
     token: newToken,
     refreshToken: newRefreshToken,
@@ -72,17 +73,18 @@ export const tryLoggingIn = async (
   if (!user) {
     return {
       ok: false,
-      errors: [{ path: "Email", message: "Cannot find user with this email" }]
+      errors: [{ path: "email", message: "Cannot find user with this email" }]
     };
   }
-  bcrypt.compare(password, user.password, (err, res) => {
-    if (err) {
-      return {
-        ok: false,
-        errors: [{ path: "Password", message: "Invalid Password" }]
-      };
-    }
-  });
+  let validPassword = await bcrypt.compare(password, user.password);
+
+  if (!validPassword) {
+    return {
+      ok: false,
+      errors: [{ path: "password", message: "Invalid Password" }]
+    };
+  }
+
   const refreshTokenSecret = user.password + SECRET2;
   let [token, refreshToken] = createTokens(user, SECRET, refreshTokenSecret);
   return {

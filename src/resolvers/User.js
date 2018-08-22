@@ -1,5 +1,5 @@
 import { tryLoggingIn } from "../auth";
-import shoe from "../models/shoe";
+import formatErrors from "../formatErrors";
 
 export default {
   User: {
@@ -7,8 +7,8 @@ export default {
       models.Shoe.findAll({ where: { userId: id } })
   },
   Query: {
-    getUser: (parent, { userId }, { models }, info) =>
-      models.User.findOne({ where: { id: userId } }, { raw: true }),
+    getUser: (parent, args, { models, user }, info) =>
+      models.User.findOne({ where: { id: user.id } }, { raw: true }),
     allUsers: (parent, args, context, info) => models.User.findAll()
   },
   Mutation: {
@@ -20,7 +20,6 @@ export default {
           user: newUser
         };
       } catch (error) {
-        console.log(error);
         return {
           ok: false,
           errors: formatErrors(error, models)
@@ -36,7 +35,7 @@ export default {
           ok: false,
           errors: [
             {
-              path: "Like",
+              path: "like",
               msg: "Something went wrong when liking these shoes"
             }
           ]

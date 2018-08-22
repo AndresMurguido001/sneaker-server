@@ -25,7 +25,7 @@ export default gql`
     refreshToken: String
   }
   type Query {
-    getUser(userId: Int!): User!
+    getUser: User!
     allUsers: [User!]!
   }
   type Mutation {

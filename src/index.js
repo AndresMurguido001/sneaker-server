@@ -5,6 +5,7 @@ import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas";
 import path from "path";
 import jwt from "jsonwebtoken";
 import { refreshTokens } from "./auth";
+import cors from "cors";
 
 import models from "./models";
 
@@ -42,6 +43,8 @@ const addUser = async (req, res, next) => {
   }
   next();
 };
+let app = express();
+app.use(bodyParser.json(), addUser, cors("*"));
 
 const server = new ApolloServer({
   typeDefs: typeDefs,
@@ -60,8 +63,6 @@ const server = new ApolloServer({
   })
 });
 
-let app = express();
-app.use(bodyParser.json(), addUser);
 server.applyMiddleware({
   app,
   addUser
