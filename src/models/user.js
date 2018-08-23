@@ -44,6 +44,9 @@ export default (sequelize, DataTypes) => {
             msg: "Password must be between 6 and 30 characters"
           }
         }
+      },
+      profilePic: {
+        type: DataTypes.STRING
       }
     },
     {

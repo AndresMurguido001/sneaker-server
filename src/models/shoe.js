@@ -54,7 +54,16 @@ export default (sequelize, DataTypes) => {
         }
       }
     },
-    numberOfLikes: DataTypes.INTEGER
+    numberOfLikes: DataTypes.INTEGER,
+    photos: {
+      type: DataTypes.STRING,
+      get: function() {
+        return JSON.parse(this.getDataValue("photos"));
+      },
+      set: function(val) {
+        return this.setDataValue("photos", JSON.stringify(val));
+      }
+    }
   });
 
   Shoe.associate = models => {

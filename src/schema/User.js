@@ -7,6 +7,7 @@ export default gql`
     firstname: String!
     lastname: String!
     shoes: [Shoe!]
+    profilePic: String
   }
   type LikedResponse {
     ok: Boolean!

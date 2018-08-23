@@ -1,4 +1,5 @@
 import formatErrors from "../formatErrors";
+import aws from "aws-sdk";
 
 export default {
   Shoe: {
@@ -8,6 +9,7 @@ export default {
   Query: {
     getAllShoes: async (parent, args, { models }) => models.Shoe.findAll(),
     getShoe: async (parent, { shoeId }, { models }) => {
+      //Change this method or add one to search through shoes
       let shoe = await models.Shoe.findOne(
         { where: { id: shoeId } },
         { raw: true }
@@ -25,6 +27,29 @@ export default {
     }
   },
   Mutation: {
+    signS3: async (parent, { filename, filetype }, { models }) => {
+      // AWS_ACCESS_KEY_ID
+      // AWS_SECRET_ACCESS_KEY
+      const s3 = new aws.S3({
+        signatureVersion: "v4",
+        region: "us-east-1"
+      });
+      let s3Bucket = BUCKET_NAME;
+      const s3Params = {
+        Bucket: s3Bucket,
+        Key: filename,
+        Expires: 60,
+        ContentType: filetype,
+        ACL: "public-read"
+      };
+      const signedRequest = await s3.getSignedUrl("putObject", s3Params);
+      const url = `https://${s3Bucket}.s3.amazonaws.com/${filename}`;
+
+      return {
+        signedRequest,
+        url
+      };
+    },
     createShoe: async (parent, args, { models }) => {
       try {
         let newShoes = await models.Shoe.create(args);
