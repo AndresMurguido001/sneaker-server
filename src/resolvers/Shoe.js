@@ -1,5 +1,7 @@
 import formatErrors from "../formatErrors";
 import aws from "aws-sdk";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default {
   Shoe: {
@@ -34,7 +36,7 @@ export default {
         signatureVersion: "v4",
         region: "us-east-1"
       });
-      let s3Bucket = BUCKET_NAME;
+      let s3Bucket = process.env.BUCKET_NAME;
       const s3Params = {
         Bucket: s3Bucket,
         Key: filename,
@@ -58,6 +60,7 @@ export default {
           shoe: newShoes
         };
       } catch (error) {
+        console.log("ERROR CREATING SHOEs", error);
         return {
           ok: false,
           errors: formatErrors(error, models)

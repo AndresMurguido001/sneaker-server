@@ -19,7 +19,7 @@ export default (sequelize, DataTypes) => {
       }
     },
     size: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
       validate: {
         isNumeric: {

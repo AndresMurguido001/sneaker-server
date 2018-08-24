@@ -21,7 +21,7 @@ export const createTokens = (user, secret, secret2) => {
       expiresIn: "5h"
     }
   );
-  return [token, refreshToken];
+  return Promise.all([token, refreshToken]);
 };
 
 export const refreshTokens = async (
@@ -32,10 +32,13 @@ export const refreshTokens = async (
   SECRET2
 ) => {
   let userId = 0;
+  console.log("refreshing");
   try {
+    // SECRET2
     const {
       user: { id }
-    } = await jwt.verify(refreshToken, SECRET2);
+    } = await jwt.decode(refreshToken);
+
     userId = id;
   } catch (error) {
     return {};
@@ -43,7 +46,10 @@ export const refreshTokens = async (
   if (!userId) {
     return {};
   }
-  const user = await models.User.findOne({ where: { id } }, { raw: true });
+  const user = await models.User.findOne(
+    { where: { id: userId } },
+    { raw: true }
+  );
 
   if (!user) {
     return {};
@@ -86,7 +92,11 @@ export const tryLoggingIn = async (
   }
 
   const refreshTokenSecret = user.password + SECRET2;
-  let [token, refreshToken] = createTokens(user, SECRET, refreshTokenSecret);
+  let [token, refreshToken] = await createTokens(
+    user,
+    SECRET,
+    refreshTokenSecret
+  );
   return {
     ok: true,
     token: token,

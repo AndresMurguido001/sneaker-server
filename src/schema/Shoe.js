@@ -4,7 +4,7 @@ export default gql`
   type Shoe {
     id: Int!
     brand: String!
-    size: Int!
+    size: Float!
     photos: [String!]
     model: String!
     description: String!
@@ -37,7 +37,7 @@ export default gql`
     signS3(filename: String!, filetype: String!): S3Payload!
     createShoe(
       brand: String!
-      size: Int!
+      size: Float!
       model: String!
       userId: Int!
       description: String!
