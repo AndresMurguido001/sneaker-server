@@ -1,5 +1,6 @@
 import { tryLoggingIn } from "../auth";
 import formatErrors from "../formatErrors";
+import { findValuesRemovedFromEnums } from "graphql/utilities/findBreakingChanges";
 
 export default {
   User: {
@@ -36,7 +37,7 @@ export default {
           errors: [
             {
               path: "like",
-              msg: "Something went wrong when liking these shoes"
+              message: "Something went wrong when liking these shoes"
             }
           ]
         };
@@ -44,6 +45,29 @@ export default {
 
       return {
         ok: true
+      };
+    },
+    uploadProfilePic: async (parent, { profilePic }, { models, user }) => {
+      const userToUpdate = await models.User.findOne(
+        { where: { id: user.id } },
+        { raw: true }
+      );
+      if (!user) {
+        return {
+          ok: false,
+          errors: [
+            {
+              path: "Profile Picture",
+              message: "Could not upload profile picture"
+            }
+          ]
+        };
+      }
+      userToUpdate.profilePic = profilePic;
+      userToUpdate.save();
+      return {
+        ok: true,
+        profilePic: userToUpdate.profilePic
       };
     }
   }

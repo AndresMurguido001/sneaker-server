@@ -29,6 +29,11 @@ export default gql`
     getUser: User!
     allUsers: [User!]!
   }
+  type ProfilePicResponse {
+    ok: Boolean!
+    errors: [Error!]
+    profilePic: String!
+  }
   type Mutation {
     registerUser(
       email: String!
@@ -37,6 +42,7 @@ export default gql`
       lastname: String!
     ): RegisterResponse!
     login(email: String!, password: String!): LoginResponse!
+    uploadProfilePic(profilePic: String!): ProfilePicResponse!
     likeShoe(userId: Int!, shoeId: Int!): LikedResponse!
   }
 `;
