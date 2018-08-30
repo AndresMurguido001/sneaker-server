@@ -8,8 +8,14 @@ export default {
       models.Shoe.findAll({ where: { userId: id } })
   },
   Query: {
-    getUser: (parent, args, { models, user }, info) =>
-      models.User.findOne({ where: { id: user.id } }, { raw: true }),
+    getUser: (parent, { id }, { models, user }, info) => {
+      let userId = parseInt(id);
+      let usersProfile = models.User.findOne(
+        { where: { id: userId } },
+        { raw: true }
+      );
+      return usersProfile;
+    },
     allUsers: (parent, args, context, info) => models.User.findAll()
   },
   Mutation: {

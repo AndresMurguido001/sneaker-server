@@ -26,7 +26,7 @@ export default gql`
     refreshToken: String
   }
   type Query {
-    getUser: User!
+    getUser(id: String!): User!
     allUsers: [User!]!
   }
   type ProfilePicResponse {
