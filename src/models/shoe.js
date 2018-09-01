@@ -9,15 +9,6 @@ export default (sequelize, DataTypes) => {
         }
       }
     },
-    images: {
-      type: DataTypes.STRING,
-      validate: {
-        max: {
-          args: 3,
-          msg: "Maximum of 3 photos"
-        }
-      }
-    },
     size: {
       type: DataTypes.FLOAT,
       allowNull: false,
@@ -56,7 +47,7 @@ export default (sequelize, DataTypes) => {
     },
     numberOfLikes: DataTypes.INTEGER,
     photos: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(1000),
       get: function() {
         return JSON.parse(this.getDataValue("photos"));
       },

@@ -55,11 +55,13 @@ export default {
     createShoe: async (parent, args, { models }) => {
       try {
         let newShoes = await models.Shoe.create(args);
+        console.log(args);
         return {
           ok: true,
           shoe: newShoes
         };
       } catch (error) {
+        console.log(error);
         return {
           ok: false,
           errors: formatErrors(error, models)
