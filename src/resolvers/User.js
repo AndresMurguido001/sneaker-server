@@ -35,21 +35,33 @@ export default {
     login: async (parent, { email, password }, { models, SECRET, SECRET2 }) =>
       await tryLoggingIn(email, password, models, SECRET, SECRET2),
     likeShoe: async (parent, args, { models }) => {
-      let like = await models.Like.create(args);
+      let like = await models.Like.findOne(
+        {
+          where: {
+            userId: args.userId,
+            [models.Sequelize.Op.and]: [
+              {
+                shoeId: args.shoeId
+              }
+            ]
+          }
+        },
+        { raw: true }
+      );
       if (!like) {
+        await models.Like.create(args);
         return {
-          ok: false,
-          errors: [
-            {
-              path: "like",
-              message: "Something went wrong when liking these shoes"
-            }
-          ]
+          ok: true
         };
       }
-
       return {
-        ok: true
+        ok: false,
+        errors: [
+          {
+            path: "like",
+            message: "Seems like you have already liked this pair"
+          }
+        ]
       };
     },
     uploadProfilePic: async (parent, { profilePic }, { models, user }) => {
