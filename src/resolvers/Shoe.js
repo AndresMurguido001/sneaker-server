@@ -6,14 +6,20 @@ dotenv.config();
 export default {
   Shoe: {
     owner: async ({ userId }, args, { models }) =>
-      await models.User.findOne({ where: { id: userId } }, { raw: true })
+      await models.User.findOne({ where: { id: userId } }, { raw: true }),
+    numberOfLikes: async ({ id }, args, { models }) => {
+      let num = await models.Like.count({ where: { shoeId: id } });
+      return num;
+    }
   },
   Query: {
     getAllShoes: async (parent, args, { models }) => models.Shoe.findAll(),
     getShoe: async (parent, { shoeId }, { models }) => {
       //Change this method or add one to search through shoes
       let shoe = await models.Shoe.findOne(
-        { where: { id: shoeId } },
+        {
+          where: { id: shoeId }
+        },
         { raw: true }
       );
       if (!shoe) {
@@ -30,8 +36,7 @@ export default {
   },
   Mutation: {
     signS3: async (parent, { filename, filetype }, { models }) => {
-      // AWS_ACCESS_KEY_ID
-      // AWS_SECRET_ACCESS_KEY
+      console.log(filename);
       const s3 = new aws.S3({
         signatureVersion: "v4",
         region: "us-east-1"
@@ -46,7 +51,6 @@ export default {
       };
       const signedRequest = await s3.getSignedUrl("putObject", s3Params);
       const url = `https://${s3Bucket}.s3.amazonaws.com/${filename}`;
-
       return {
         signedRequest,
         url

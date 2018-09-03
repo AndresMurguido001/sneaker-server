@@ -1,6 +1,5 @@
 import { tryLoggingIn } from "../auth";
 import formatErrors from "../formatErrors";
-import { findValuesRemovedFromEnums } from "graphql/utilities/findBreakingChanges";
 
 export default {
   User: {

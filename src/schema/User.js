@@ -11,7 +11,6 @@ export default gql`
   }
   type LikedResponse {
     ok: Boolean!
-    liked: Boolean!
     errors: [Error!]
   }
   type RegisterResponse {
