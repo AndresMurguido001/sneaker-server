@@ -36,7 +36,6 @@ export default {
   },
   Mutation: {
     signS3: async (parent, { filename, filetype }, { models }) => {
-      console.log(filename);
       const s3 = new aws.S3({
         signatureVersion: "v4",
         region: "us-east-1"
@@ -59,13 +58,12 @@ export default {
     createShoe: async (parent, args, { models }) => {
       try {
         let newShoes = await models.Shoe.create(args);
-        console.log(args);
+
         return {
           ok: true,
           shoe: newShoes
         };
       } catch (error) {
-        console.log(error);
         return {
           ok: false,
           errors: formatErrors(error, models)
