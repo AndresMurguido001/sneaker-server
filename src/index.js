@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { refreshTokens } from "./auth";
 import cors from "cors";
 import DataLoader from "dataloader";
-import _ from "lodash";
+import { batchLikes, batchOwners } from "./batchFunctions";
 
 import models from "./models";
 
@@ -48,19 +48,6 @@ const addUser = async (req, res, next) => {
 let app = express();
 app.use(bodyParser.json(), addUser, cors("*"));
 
-const batchLikes = async (keys, { Like }) => {
-  const likes = await Like.findAll({
-    raw: true,
-    where: {
-      shoeId: {
-        $in: keys
-      }
-    }
-  });
-  let gl = _.groupBy(likes, "shoeId");
-  return keys.map(k => (gl[k] ? gl[k].length : 0));
-};
-
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
@@ -75,7 +62,8 @@ const server = new ApolloServer({
     user: req.user,
     SECRET,
     SECRET2,
-    likesLoader: new DataLoader(keys => batchLikes(keys, models))
+    likesLoader: new DataLoader(keys => batchLikes(keys, models)),
+    ownerLoader: new DataLoader(keys => batchOwners(keys, models))
   })
 });
 
