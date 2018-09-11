@@ -1,3 +1,4 @@
+//TODO: Add Reviews for shoes with reviewer, shoe, review
 export default (sequelize, DataTypes) => {
   let Shoe = sequelize.define("shoe", {
     brand: {

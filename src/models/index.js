@@ -11,7 +11,8 @@ let sequelize = new Sequelize("shoestore", "postgres", "postgres", {
 const models = {
   User: sequelize.import("./user"),
   Shoe: sequelize.import("./shoe"),
-  Like: sequelize.import("./likes")
+  Like: sequelize.import("./likes"),
+  Review: sequelize.import("./review")
 };
 Object.keys(models).forEach(name => {
   if (models[name].associate) {
