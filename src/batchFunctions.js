@@ -22,3 +22,13 @@ export const batchOwners = async (keys, { User }) => {
   });
   return users;
 };
+export const batchReviewers = async (keys, { User }) => {
+  const reviewers = await User.findAll({
+    where: {
+      id: {
+        $in: keys
+      }
+    }
+  });
+  return reviewers;
+};

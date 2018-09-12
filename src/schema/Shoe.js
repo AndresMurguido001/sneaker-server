@@ -10,6 +10,7 @@ export default gql`
     description: String!
     numberOfLikes: Int!
     owner: User!
+    reviews: [Review!]!
   }
 
   type S3Payload {

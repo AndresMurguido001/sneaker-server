@@ -8,7 +8,10 @@ export default {
     owner: async ({ userId }, args, { ownerLoader }) =>
       ownerLoader.load(userId),
     //
-    numberOfLikes: async ({ id }, args, { likesLoader }) => likesLoader.load(id)
+    numberOfLikes: async ({ id }, args, { likesLoader }) =>
+      likesLoader.load(id),
+    reviews: async ({ id }, args, { models }) =>
+      models.Review.findAll({ where: { shoeId: id } })
   },
   Query: {
     getAllShoes: async (parent, args, { models }) => models.Shoe.findAll(),

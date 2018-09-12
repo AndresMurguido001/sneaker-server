@@ -2,12 +2,12 @@ import formatErrors from "../formatErrors";
 
 export default {
   Review: {
-    user: async ({ userId }, args, { models }) => {
-      let user = await models.User.findOne({ where: { id: userId } });
-      if (!user) {
+    user: async ({ userId }, args, { reviewerLoader }) => {
+      let reviewers = reviewerLoader.load(userId);
+      if (!reviewers) {
         throw new Error("Error finding Reviewer, Check parent information");
       }
-      return user;
+      return reviewers;
     }
   },
   Query: {

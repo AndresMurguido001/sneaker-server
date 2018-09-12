@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { refreshTokens } from "./auth";
 import cors from "cors";
 import DataLoader from "dataloader";
-import { batchLikes, batchOwners } from "./batchFunctions";
+import { batchLikes, batchOwners, batchReviewers } from "./batchFunctions";
 
 import models from "./models";
 
@@ -63,7 +63,8 @@ const server = new ApolloServer({
     SECRET,
     SECRET2,
     likesLoader: new DataLoader(keys => batchLikes(keys, models)),
-    ownerLoader: new DataLoader(keys => batchOwners(keys, models))
+    ownerLoader: new DataLoader(keys => batchOwners(keys, models)),
+    reviewerLoader: new DataLoader(keys => batchReviewers(keys, models))
   })
 });
 

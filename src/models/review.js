@@ -8,8 +8,8 @@ export default (sequelize, DataTypes) => {
           msg: "Must provide a review"
         },
         len: {
-          args: [10, 300],
-          msg: "Review must be between 10 and 300 characters"
+          args: [1, 300],
+          msg: "Review must be between 1 and 300 characters"
         }
       }
     }
