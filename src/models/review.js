@@ -6,6 +6,10 @@ export default (sequelize, DataTypes) => {
         notEmpty: {
           args: true,
           msg: "Must provide a review"
+        },
+        len: {
+          args: [10, 300],
+          msg: "Review must be between 10 and 300 characters"
         }
       }
     }

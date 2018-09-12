@@ -3,11 +3,6 @@ import aws from "aws-sdk";
 import dotenv from "dotenv";
 dotenv.config();
 
-// {
-//   let num = await models.Like.count({ where: { shoeId: id } });
-//   return num;
-// }
-// await models.User.findOne({ where: { id: userId } }, { raw: true }),
 export default {
   Shoe: {
     owner: async ({ userId }, args, { ownerLoader }) =>
