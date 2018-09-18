@@ -11,6 +11,7 @@ export default gql`
     numberOfLikes: Int!
     owner: User!
     reviews: [Review!]!
+    averageRating: Float!
   }
 
   type S3Payload {

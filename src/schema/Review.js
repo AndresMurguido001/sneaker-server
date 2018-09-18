@@ -5,6 +5,7 @@ export default gql`
     id: Int!
     message: String!
     user: User!
+    starRating: Float
     shoeId: Int!
   }
 
@@ -21,6 +22,7 @@ export default gql`
   type Mutation {
     createReview(
       message: String!
+      starRating: Float
       userId: Int!
       shoeId: Int!
     ): createReviewResponse!

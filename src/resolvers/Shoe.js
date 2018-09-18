@@ -11,7 +11,19 @@ export default {
     numberOfLikes: async ({ id }, args, { likesLoader }) =>
       likesLoader.load(id),
     reviews: async ({ id }, args, { models }) =>
-      models.Review.findAll({ where: { shoeId: id } })
+      models.Review.findAll({ where: { shoeId: id } }, { raw: true }),
+    averageRating: async ({ id }, args, { models }) => {
+      let reviews = await models.Review.findAll(
+        { where: { shoeId: id } },
+        { raw: true }
+      );
+      if (reviews.length > 0) {
+        let ratings = reviews.map(rev => rev.starRating).filter(i => i > 0);
+        let sum = ratings.reduce((acc, cv) => acc + cv);
+        return sum / ratings.length;
+      }
+      return 0;
+    }
   },
   Query: {
     getAllShoes: async (parent, args, { models }) => models.Shoe.findAll(),

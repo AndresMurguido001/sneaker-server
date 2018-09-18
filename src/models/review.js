@@ -12,6 +12,10 @@ export default (sequelize, DataTypes) => {
           msg: "Review must be between 1 and 300 characters"
         }
       }
+    },
+    starRating: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
     }
   });
 

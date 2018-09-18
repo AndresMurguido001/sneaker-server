@@ -73,7 +73,7 @@ server.applyMiddleware({
   addUser
 });
 
-models.sequelize.sync({}).then(function() {
+models.sequelize.sync().then(function() {
   app.listen(8080, () => {
     console.log("Working");
   });
