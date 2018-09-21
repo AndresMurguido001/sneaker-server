@@ -1,4 +1,3 @@
-//TODO: Add Reviews for shoes with reviewer, shoe, review
 export default (sequelize, DataTypes) => {
   let Shoe = sequelize.define("shoe", {
     brand: {
@@ -46,7 +45,10 @@ export default (sequelize, DataTypes) => {
         }
       }
     },
-    numberOfLikes: DataTypes.INTEGER,
+    numberOfLikes: {
+      type: DataTypes.INTEGER,
+      get: () => {}
+    },
     photos: {
       type: DataTypes.STRING(1000),
       get: function() {

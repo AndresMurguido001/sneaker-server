@@ -32,3 +32,17 @@ export const batchReviewers = async (keys, { User }) => {
   });
   return reviewers;
 };
+export const batchReviews = async (keys, { Review }) => {
+  const reviews = await Review.findAll(
+    {
+      where: {
+        shoeId: {
+          $in: keys
+        }
+      }
+    },
+    { raw: true }
+  );
+  let gr = _.groupBy(reviews, "shoeId");
+  return keys.map(k => (gr[k] ? gr[k] : []));
+};

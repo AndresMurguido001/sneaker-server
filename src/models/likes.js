@@ -18,17 +18,3 @@ export default (sequelize, DataTypes) => {
   };
   return Like;
 };
-// , {
-//   as: "user",
-//   foreignKey: {
-//     name: "userId",
-//     field: "user_id",
-//   }
-// }
-// , {
-//   as: "shoe",
-//   foreignKey: {
-//     name: "shoeId",
-//     field: "shoe_id"
-//   }
-// }

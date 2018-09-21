@@ -1,5 +1,6 @@
 import { gql } from "apollo-server";
-
+//Removed search shoes to make getAllShoes work for both search and all shoes.
+// searchShoes(searchBy: String!): [Shoe!]!
 export default gql`
   type Shoe {
     id: Int!
@@ -32,7 +33,7 @@ export default gql`
   }
 
   type Query {
-    getAllShoes: [Shoe!]!
+    getAllShoes(searchBy: String): [Shoe!]!
     getShoe(shoeId: Int!): GetShoeResponse!
   }
   type Mutation {

@@ -1,22 +1,28 @@
 import formatErrors from "../formatErrors";
 import aws from "aws-sdk";
 import dotenv from "dotenv";
+import Sequelize from "sequelize";
+
 dotenv.config();
+
+const Op = Sequelize.Op;
 
 export default {
   Shoe: {
     owner: async ({ userId }, args, { ownerLoader }) =>
       ownerLoader.load(userId),
-    //
     numberOfLikes: async ({ id }, args, { likesLoader }) =>
       likesLoader.load(id),
-    reviews: async ({ id }, args, { models }) =>
-      models.Review.findAll({ where: { shoeId: id } }, { raw: true }),
-    averageRating: async ({ id }, args, { models }) => {
-      let reviews = await models.Review.findAll(
-        { where: { shoeId: id } },
-        { raw: true }
-      );
+    reviews: async ({ id }, args, { models }) => {
+      return models.Review.findAll({ where: { shoeId: id } }, { raw: true });
+    },
+    averageRating: async ({ id }, args, { reviewLoader }) => {
+      //Create loader for this query
+      // let reviews = await models.Review.findAll(
+      //   { where: { shoeId: id } },
+      //   { raw: true }
+      // );
+      let reviews = await reviewLoader.load(id);
       if (reviews.length > 0) {
         let ratings = reviews.map(rev => rev.starRating).filter(i => i > 0);
         let sum = ratings.reduce((acc, cv) => acc + cv);
@@ -26,9 +32,31 @@ export default {
     }
   },
   Query: {
-    getAllShoes: async (parent, args, { models }) => models.Shoe.findAll(),
+    getAllShoes: async (parent, args, { models }) => {
+      let filterString = args.searchBy;
+      if (filterString) {
+        let match = await models.Shoe.findAll({
+          where: {
+            [Op.or]: [
+              {
+                model: {
+                  [Op.like]: `%${filterString}%`
+                }
+              },
+              {
+                brand: {
+                  [Op.like]: `%${filterString}%`
+                }
+              }
+            ]
+          }
+        });
+        return match;
+      } else {
+        return models.Shoe.findAll();
+      }
+    },
     getShoe: async (parent, { shoeId }, { models }) => {
-      //Change this method or add one to search through shoes
       let shoe = await models.Shoe.findOne(
         {
           where: { id: shoeId }
