@@ -32,6 +32,7 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "graphql": "^0.13.2",
+    "graphql-subscriptions": "^1.0.0",
     "graphql-tools": "^3.1.1",
     "jimp": "^0.3.11",
     "jsonwebtoken": "^8.3.0",
@@ -39,6 +40,7 @@
     "merge-graphql-schemas": "^1.5.3",
     "pg": "^7.4.3",
     "sequelize": "^4.38.0",
-    "sequelize-cli": "^4.1.1"
+    "sequelize-cli": "^4.1.1",
+    "subscriptions-transport-ws": "^0.9.15"
   }
 }

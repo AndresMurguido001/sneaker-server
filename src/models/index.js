@@ -12,7 +12,9 @@ const models = {
   User: sequelize.import("./user"),
   Shoe: sequelize.import("./shoe"),
   Like: sequelize.import("./likes"),
-  Review: sequelize.import("./review")
+  Review: sequelize.import("./review"),
+  DirectMessage: sequelize.import("./directMessage"),
+  Channel: sequelize.import("./channel")
 };
 Object.keys(models).forEach(name => {
   if (models[name].associate) {

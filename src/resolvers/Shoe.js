@@ -17,11 +17,6 @@ export default {
       return models.Review.findAll({ where: { shoeId: id } }, { raw: true });
     },
     averageRating: async ({ id }, args, { reviewLoader }) => {
-      //Create loader for this query
-      // let reviews = await models.Review.findAll(
-      //   { where: { shoeId: id } },
-      //   { raw: true }
-      // );
       let reviews = await reviewLoader.load(id);
       if (reviews.length > 0) {
         let ratings = reviews.map(rev => rev.starRating).filter(i => i > 0);

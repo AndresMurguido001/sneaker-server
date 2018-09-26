@@ -1,5 +1,5 @@
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
 import bodyParser from "body-parser";
 import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas";
 import path from "path";
@@ -13,6 +13,8 @@ import {
   batchReviewers,
   batchReviews
 } from "./batchFunctions";
+//Subscriptions
+import { createServer } from "http";
 
 import models from "./models";
 
@@ -53,9 +55,36 @@ const addUser = async (req, res, next) => {
 let app = express();
 app.use(bodyParser.json(), addUser, cors("*"));
 
-const server = new ApolloServer({
-  typeDefs: typeDefs,
-  resolvers: resolvers,
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+});
+
+const apolloServer = new ApolloServer({
+  schema,
+  subscriptions: {
+    path: "/subscriptions",
+    onConnect: async ({ token, refreshToken }, webSocket) => {
+      if (token && refreshToken) {
+        try {
+          let { user } = jwt.verify(token, SECRET);
+          return user;
+        } catch (err) {
+          const newTokens = await refreshToken(
+            token,
+            refreshToken,
+            SECRET,
+            SECRET2
+          );
+          user = newTokens.user;
+          return user;
+        }
+        if (!user) {
+          throw new Error("Invalid Tokens!");
+        }
+      }
+    }
+  },
   playground: {
     endpoint: `http://localhost:8080/graphql`,
     settings: {
@@ -74,13 +103,17 @@ const server = new ApolloServer({
   })
 });
 
-server.applyMiddleware({
+apolloServer.applyMiddleware({
   app,
   addUser
 });
 
+const httpServer = createServer(app);
+apolloServer.installSubscriptionHandlers(httpServer);
+
 models.sequelize.sync().then(function() {
-  app.listen(8080, () => {
-    console.log("Working");
+  httpServer.listen(8080, () => {
+    //Set up subscription Server here
+    console.log("Regular server running on http://localhost:8080");
   });
 });
