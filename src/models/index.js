@@ -1,6 +1,6 @@
 import Sequelize from "sequelize";
 
-let sequelize = new Sequelize("shoestore", "postgres", "postgres", {
+const sequelize = new Sequelize("shoestore", "postgres", "postgres", {
   dialect: "postgres",
   host: "localhost",
   define: {

@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-express";
+import { gql } from "apollo-server";
 
 export default gql`
   type User {
@@ -9,22 +9,6 @@ export default gql`
     shoes: [Shoe!]
     profilePic: String
     channels: [Channel!]
-  }
-  type Message {
-    id: Int!
-    text: String!
-    author: User!
-    created_at: String
-  }
-  type Channel {
-    id: Int!
-    receiver: User!
-    messages: [Message!]
-  }
-  type CreateChannelResponse {
-    ok: Boolean!
-    channel: Channel!
-    errors: [Error!]
   }
   type LikedResponse {
     ok: Boolean!
@@ -44,7 +28,6 @@ export default gql`
   type Query {
     getUser(id: String!): User!
     allUsers: [User!]!
-    getChannelMessages(channelId: Int!): [Message!]!
   }
   type ProfilePicResponse {
     ok: Boolean!
@@ -61,10 +44,5 @@ export default gql`
     login(email: String!, password: String!): LoginResponse!
     uploadProfilePic(profilePic: String!): ProfilePicResponse!
     likeShoe(userId: Int!, shoeId: Int!): LikedResponse!
-    createMessage(channelId: Int!, text: String!): Boolean!
-    createChannel(receiverId: Int!, senderId: Int!): CreateChannelResponse!
-  }
-  type Subscription {
-    newChannelMessage(channelId: Int!): Message!
   }
 `;

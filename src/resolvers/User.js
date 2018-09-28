@@ -1,13 +1,7 @@
 import { tryLoggingIn } from "../auth";
 import formatErrors from "../formatErrors";
-import { PubSub, withFilter } from "apollo-server";
-
-const NEW_CHANNEL_MESSAGE = "NEW_CHANNEL_MESSAGE";
-
-const pubsub = new PubSub();
 
 //Create Channel which gets created with pubsub.withfilter.
-
 export default {
   User: {
     shoes: async ({ id }, args, { models }) =>
@@ -37,15 +31,7 @@ export default {
       );
       return usersProfile;
     },
-    allUsers: (parent, args, context, info) => models.User.findAll(),
-    getChannelMessages: async (parent, { channelId }, { models, user }) => {
-      let messages = await models.DirectMessage.findAll({
-        where: {
-          channelId
-        }
-      });
-      return messages;
-    }
+    allUsers: (parent, args, context, info) => models.User.findAll()
   },
   Mutation: {
     registerUser: async (parent, args, { models }) => {
@@ -150,44 +136,6 @@ export default {
         ok: true,
         channel
       };
-    },
-    createMessage: async (parent, { channelId, text }, { models, user }) => {
-      const message = await models.DirectMessage.create({
-        text,
-        channelId,
-        userId: user.id
-      });
-      const asyncFunc = async () => {
-        const currentUser = await models.User.findOne(
-          {
-            where: {
-              id: user.id
-            }
-          },
-          { raw: true }
-        );
-        pubsub.publish(NEW_CHANNEL_MESSAGE, {
-          channelId: channelId,
-          newChannelMessage: {
-            message
-          }
-        });
-      };
-      if (!message) {
-        return false;
-      }
-      asyncFunc();
-      return true;
     }
-  },
-  Subscription: {
-    newChannelMessage: {
-      subscribe: (parent, args, { models, user }) =>
-        pubsub.asyncIterator(NEW_CHANNEL_MESSAGE)
-    }
-  },
-  Message: {
-    author: async ({ userId }, args, { models }) =>
-      await models.User.findOne({ where: { id: userId } })
   }
 };

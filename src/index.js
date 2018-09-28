@@ -1,5 +1,6 @@
 import express from "express";
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
+// import { ApolloServer } from 'apollo-server'
 import bodyParser from "body-parser";
 import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas";
 import path from "path";
@@ -15,6 +16,8 @@ import {
 } from "./batchFunctions";
 //Subscriptions
 import { createServer } from "http";
+import { SubscriptionServer } from "subscriptions-transport-ws";
+import { execute, subscribe } from "graphql";
 
 import models from "./models";
 
@@ -55,40 +58,21 @@ const addUser = async (req, res, next) => {
 let app = express();
 app.use(bodyParser.json(), addUser, cors("*"));
 
-const schema = makeExecutableSchema({
+const graphqlSchema = makeExecutableSchema({
   typeDefs,
   resolvers
 });
 
 const apolloServer = new ApolloServer({
-  schema,
+  typeDefs,
+  resolvers,
   subscriptions: {
-    path: "/subscriptions",
-    onConnect: async ({ token, refreshToken }, webSocket) => {
-      if (token && refreshToken) {
-        try {
-          let { user } = jwt.verify(token, SECRET);
-          return user;
-        } catch (err) {
-          const newTokens = await refreshToken(
-            token,
-            refreshToken,
-            SECRET,
-            SECRET2
-          );
-          user = newTokens.user;
-          return user;
-        }
-        if (!user) {
-          throw new Error("Invalid Tokens!");
-        }
-      }
-    }
+    path: "/subscriptions"
   },
   playground: {
     endpoint: `http://localhost:8080/graphql`,
     settings: {
-      "editor.theme": "dark"
+      "editor.theme": "light"
     }
   },
   context: async ({ req }) => ({
@@ -108,12 +92,44 @@ apolloServer.applyMiddleware({
   addUser
 });
 
-const httpServer = createServer(app);
-apolloServer.installSubscriptionHandlers(httpServer);
+const ws = createServer(app);
+// apolloServer.installSubscriptionHandlers(ws);
 
-models.sequelize.sync().then(function() {
-  httpServer.listen(8080, () => {
-    //Set up subscription Server here
-    console.log("Regular server running on http://localhost:8080");
+models.sequelize.sync().then(() => {
+  ws.listen(8080, x => {
+    console.log(
+      "Regular server running on http://localhost:8080",
+      ` and ${apolloServer.subscriptionsPath} `
+    );
+    new SubscriptionServer(
+      {
+        execute: execute,
+        subscribe: subscribe,
+        schema: graphqlSchema,
+        onConnect: async ({ token, refreshToken }, webSocket) => {
+          console.log("WS CONNECTED");
+          if (token && refreshToken) {
+            try {
+              let { user } = jwt.verify(token, SECRET);
+              return { user, models };
+            } catch (err) {
+              const newTokens = await refreshToken(
+                token,
+                refreshToken,
+                SECRET,
+                SECRET2
+              );
+              user = newTokens.user;
+              return { user, models };
+            }
+          }
+          return { models };
+        }
+      },
+      {
+        server: ws,
+        path: "/subscriptions"
+      }
+    );
   });
 });
