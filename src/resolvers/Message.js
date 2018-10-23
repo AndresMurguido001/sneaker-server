@@ -49,11 +49,12 @@ export default {
   },
   Query: {
     getChannelMessages: async (parent, { channelId }, { models, user }) => {
-      let messages = await models.DirectMessage.findAll({
-        where: {
-          channelId: channelId
-        }
-      });
+      const options = {
+        order: [["created_at", "DESC"]],
+        where: { channelId },
+        limit: 35
+      };
+      let messages = await models.DirectMessage.findAll(options, { raw: true });
       return messages;
     }
   }
