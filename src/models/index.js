@@ -14,7 +14,8 @@ const models = {
   Like: sequelize.import("./likes"),
   Review: sequelize.import("./review"),
   DirectMessage: sequelize.import("./directMessage"),
-  Channel: sequelize.import("./channel")
+  Channel: sequelize.import("./channel"),
+  Cart: sequelize.import('./cart')
 };
 Object.keys(models).forEach(name => {
   if (models[name].associate) {

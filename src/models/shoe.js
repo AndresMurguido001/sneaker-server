@@ -67,6 +67,13 @@ export default (sequelize, DataTypes) => {
         field: "user_id"
       }
     });
+
+    Shoe.belongsTo(models.Cart, {
+      foreignKey: {
+        name: "cartId",
+        field: "cart_id"
+      }
+    })
   };
 
   return Shoe;

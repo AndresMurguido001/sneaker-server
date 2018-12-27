@@ -24,8 +24,9 @@ export default {
   },
   Message: {
     author: async ({ userId }, args, { models }) => {
-      return await models.User.findOne({ where: { id: userId } });
-    }
+      const author = await models.User.findOne({ where: { id: userId } });
+      return author;
+    },
   },
   Mutation: {
     createMessage: async (parent, args, { models, user }) => {
