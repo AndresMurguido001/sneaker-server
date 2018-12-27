@@ -9,10 +9,8 @@ const Op = Sequelize.Op;
 
 export default {
   Shoe: {
-    owner: async ({ userId }, args, { ownerLoader }) =>
-      ownerLoader.load(userId),
-    numberOfLikes: async ({ id }, args, { likesLoader }) =>
-      likesLoader.load(id),
+    owner: async ({ userId }, args, { ownerLoader }) => ownerLoader.load(userId),
+    numberOfLikes: async ({ id }, args, { likesLoader }) => likesLoader.load(id),
     reviews: async ({ id }, args, { models }) => {
       return models.Review.findAll({ where: { shoeId: id } }, { raw: true });
     },

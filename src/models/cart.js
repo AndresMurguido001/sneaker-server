@@ -1,6 +1,8 @@
 export default (sequelize, DataTypes) => {
   let Cart = sequelize.define("cart", {
-    items: DataTypes.INTEGER,
+    items: { 
+      type: DataTypes.INTEGER,
+    },
     total: DataTypes.FLOAT,
   });
 

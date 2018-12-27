@@ -3,17 +3,23 @@ import { gql } from "apollo-server";
 export default gql`
   type Cart {
     id: Int!
-    items: Int!
-    shoes: [Shoe!]
+    quantity: Int!
+    items: [Shoe!]
     total: Float!    
   }
 
  type Subscription {
-    newItemAdded(itemId: Int!): Boolean
+    newItemAdded(shoeId: Int!): Shoe
+  }
+
+  type ItemAddedToCartResponse {
+      ok: Boolean!
+      shoe: Shoe
+      error: [Error!]
   }
 
   type FindOrCreateCartResponse {
-      shoes: [Shoe!]
+      cart: Cart
       ok: Boolean!
       error: [Error!]
   }
@@ -24,7 +30,7 @@ export default gql`
 
   type Mutation {
     findOrCreateCart(userId: Int!): FindOrCreateCartResponse!
-    addItem(shoeId: Int!): Boolean
+    addItem(cartId:Int!, shoeId: Int!): Boolean
   }
 `;
 

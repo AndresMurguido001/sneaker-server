@@ -14,9 +14,15 @@ export default {
             )
         }
     },
+    Cart:{
+        items: async ({ id }, args, { models }, info) => {
+            let shoes = await models.Shoe.findAll({ where: { cartId: id }})
+            return shoes
+        }
+    },
     Mutation: {
         findOrCreateCart: async (parent, args, {models, userId}, info) => {
-            const cart = await models.sequelize.transaction(async transaction => {
+            const cart = await models.sequelize.transaction(async (transaction) => {
                 const currentCart = await models.Cart.findOrCreate({ 
                     where: { 
                         userId: args.userId
@@ -34,23 +40,27 @@ export default {
             })
             return {
                 ok: true,
-                shoes: null,
+                cart,
                 error: null
             }
                 
             },
         
-        addItem: async (parent, args, context, info) => {
-            let newItem = await models.Shoe.findOne({
+        addItem: async ({ id }, args, { models, userId }, info) => {
+            const newItem = await models.Shoe.findOne({
                 where: {
-                    shoeId: args.shoeId
+                    shoeId: args.shoeId,
                 }
             })
+           
             if (!newItem) {
-                return false
+                return false;
             }
+            newItem.update({
+                cartId: id
+            })
             await pubsub.publish(NEW_ITEM_ADDED, {
-                shoeId: args.shoeId
+                shoe: newItem
             })
             return true
         }
