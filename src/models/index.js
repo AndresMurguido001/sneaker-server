@@ -1,10 +1,15 @@
 import Sequelize from "sequelize";
 
+const Op = Sequelize.Op;
+
 const sequelize = new Sequelize("shoestore", "postgres", "postgres", {
   dialect: "postgres",
   host: "localhost",
   define: {
     underscored: true
+  },
+  operatorsAliases: {
+    $or: Op.or
   }
 });
 
@@ -15,7 +20,7 @@ const models = {
   Review: sequelize.import("./review"),
   DirectMessage: sequelize.import("./directMessage"),
   Channel: sequelize.import("./channel"),
-  Cart: sequelize.import('./cart')
+  Cart: sequelize.import("./cart")
 };
 Object.keys(models).forEach(name => {
   if (models[name].associate) {
@@ -24,6 +29,5 @@ Object.keys(models).forEach(name => {
 });
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
-models.op = Sequelize.Op;
 
 export default models;

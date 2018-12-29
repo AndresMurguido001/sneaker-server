@@ -1,11 +1,14 @@
 import _ from "lodash";
+import Sequelize from "sequelize";
+
+const Op = Sequelize.Op;
 
 export const batchLikes = async (keys, { Like }) => {
   const likes = await Like.findAll({
     raw: true,
     where: {
       shoeId: {
-        $in: keys
+        [Op.in]: keys
       }
     }
   });
@@ -16,7 +19,7 @@ export const batchOwners = async (keys, { User }) => {
   const users = await User.findAll({
     where: {
       id: {
-        $in: keys
+        [Op.in]: keys
       }
     }
   });
@@ -26,7 +29,7 @@ export const batchReviewers = async (keys, { User }) => {
   const reviewers = await User.findAll({
     where: {
       id: {
-        $in: keys
+        [Op.in]: keys
       }
     }
   });
@@ -37,7 +40,7 @@ export const batchReviews = async (keys, { Review }) => {
     {
       where: {
         shoeId: {
-          $in: keys
+          [Op.in]: keys
         }
       }
     },

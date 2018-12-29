@@ -9,7 +9,7 @@ export default {
     channels: async ({ id }, args, { models }) => {
       let channels = await models.Channel.findAll({
         where: {
-          [models.op.or]: [
+          $or: [
             {
               receiverId: id
             },
@@ -23,12 +23,13 @@ export default {
     }
   },
   Query: {
-    getUser: (parent, { id }, { models, user }, info) => {
-      let userId = parseInt(id);
-      let usersProfile = models.User.findOne(
-        { where: { id: userId } },
+    getUser: async (parent, { id }, { models, user }, info) => {
+      // let userId = parseInt(id);
+      let usersProfile = await models.User.findOne(
+        { where: { id } },
         { raw: true }
       );
+      console.log(usersProfile.getCart());
       return usersProfile;
     },
     allUsers: (parent, args, context, info) => models.User.findAll()
@@ -37,10 +38,13 @@ export default {
     registerUser: async (parent, args, { models }) => {
       try {
         let newUser = await models.User.create(args);
-        return {
-          ok: true,
-          user: newUser
-        };
+        let newCart = await models.Cart.create({ userId: newUser.id });
+        if (newUser && newCart) {
+          return {
+            ok: true,
+            user: newUser
+          };
+        }
       } catch (error) {
         return {
           ok: false,

@@ -58,7 +58,7 @@ const addUser = async (req, res, next) => {
 let app = express();
 app.use(bodyParser.json(), addUser, cors("*"));
 
-const graphqlSchema = makeExecutableSchema({
+export const graphqlSchema = makeExecutableSchema({
   typeDefs,
   resolvers
 });
