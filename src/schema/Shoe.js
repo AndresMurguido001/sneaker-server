@@ -13,6 +13,7 @@ export default gql`
     owner: User!
     reviews: [Review!]!
     averageRating: Float!
+    price: Float!
   }
 
   type S3Payload {
@@ -41,6 +42,7 @@ export default gql`
     createShoe(
       brand: String!
       size: Float!
+      price: Float!
       model: String!
       userId: Int!
       description: String!

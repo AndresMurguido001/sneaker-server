@@ -57,7 +57,10 @@ export default (sequelize, DataTypes) => {
       set: function(val) {
         return this.setDataValue("photos", JSON.stringify(val));
       }
-    }
+    },
+	  price: {
+		  type: DataTypes.DECIMAL(12,2),
+	  }
   });
 
   Shoe.associate = models => {

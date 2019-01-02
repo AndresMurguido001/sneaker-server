@@ -8,9 +8,14 @@ export default {
     newItemAdded: {
       subscribe: withFilter(
         (parent, args, context) => {
+		console.log("ARGS!: ", args);
           return pubsub.asyncIterator(NEW_ITEM_ADDED);
         },
-        (payload, variables) => payload.cartId === variables.cartId
+        (payload, variables) => {
+		console.log("PAYLOAD", payload)
+		console.log("VARIABLES: ", variables);
+		return payload.cartId === variables.cartId 
+	}
       )
     }
   },
@@ -25,7 +30,8 @@ export default {
     },
     total: ({ id }, args, { models, userId }) => {
       // Add price fireld to shoes model
-      return 100;
+	    let total = models.Shoe.sum('price', { where: { cartId: id }});
+	    return total;
     }
   },
   Query: {

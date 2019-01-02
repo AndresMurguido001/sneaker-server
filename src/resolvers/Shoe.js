@@ -98,6 +98,7 @@ export default {
           shoe: newShoes
         };
       } catch (error) {
+	      console.log("CREATE SHOE ERROR: ", error);
         return {
           ok: false,
           errors: formatErrors(error, models)
