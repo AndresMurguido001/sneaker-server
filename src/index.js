@@ -19,7 +19,7 @@ import { createServer } from "http";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { execute, subscribe } from "graphql";
 
-import models from "./models";
+import models from "../models";
 
 const types = fileLoader(path.join(__dirname, "./schema"));
 const typeDefs = mergeTypes(types, { all: true });
@@ -75,7 +75,7 @@ const apolloServer = new ApolloServer({
       "editor.theme": "light"
     }
   },
-  context: async ({ req }) => ({
+	context: async ({ req }) => ({
     models,
     user: req.user,
     SECRET,

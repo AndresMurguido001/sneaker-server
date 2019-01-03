@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  let Channel = sequelize.define("channel", {});
+  const Channel = sequelize.define("channel", {});
 
   Channel.associate = models => {
     Channel.belongsTo(models.User, {
@@ -17,4 +17,4 @@ export default (sequelize, DataTypes) => {
   };
 
   return Channel;
-};
+}

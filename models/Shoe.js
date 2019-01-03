@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  let Shoe = sequelize.define("shoe", {
+  const Shoe = sequelize.define("shoe", {
     brand: {
       type: DataTypes.STRING,
       validate: {

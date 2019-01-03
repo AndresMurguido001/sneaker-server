@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  let Review = sequelize.define("review", {
+  const Review = sequelize.define("review", {
     message: {
       type: DataTypes.STRING,
       validate: {
@@ -35,4 +35,4 @@ export default (sequelize, DataTypes) => {
   };
 
   return Review;
-};
+}

@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  let DirectMessage = sequelize.define("direct_message", {
+  const DirectMessage = sequelize.define("direct_message", {
     text: DataTypes.STRING
   });
 
@@ -19,4 +19,4 @@ export default (sequelize, DataTypes) => {
   };
 
   return DirectMessage;
-};
+}

@@ -1,9 +1,7 @@
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs'
 
 export default (sequelize, DataTypes) => {
-  let User = sequelize.define(
-    "user",
-    {
+  const User = sequelize.define('user', {
       firstname: {
         type: DataTypes.STRING,
         validate: {
@@ -61,3 +59,4 @@ export default (sequelize, DataTypes) => {
 
   return User;
 };
+ 

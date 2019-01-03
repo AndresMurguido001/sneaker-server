@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  let Like = sequelize.define("likes");
+  const Like = sequelize.define("like");
   Like.associate = models => {
     Like.belongsTo(models.User, {
       as: "user",
@@ -17,4 +17,4 @@ export default (sequelize, DataTypes) => {
     });
   };
   return Like;
-};
+}
