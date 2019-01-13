@@ -9,7 +9,7 @@ export default gql`
     shoes: [Shoe!]
     profilePic: String
     channels: [Channel!]
-    cartId: Int!
+    cart: Cart!
   }
   type LikedResponse {
     ok: Boolean!
@@ -27,7 +27,7 @@ export default gql`
     refreshToken: String
   }
   type Query {
-    getUser(id: Int!): User!
+    getUser(id: String!): User!
     allUsers: [User!]!
   }
   type ProfilePicResponse {

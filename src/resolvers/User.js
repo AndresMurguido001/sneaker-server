@@ -20,17 +20,23 @@ export default {
         }
       });
       return channels;
-    }
+    },
+    cart: async ({id}, args, { models }) => await models.Cart.findOne({ where: {userId: id}}),
   },
   Query: {
     getUser: async (parent, { id }, { models, user }, info) => {
-      // let userId = parseInt(id);
-      let usersProfile = await models.User.findOne(
-        { where: { id } },
-        { raw: true }
-      );
-      console.log(usersProfile.getCart());
-      return usersProfile;
+	    try {  
+		    let integerId = parseInt(id, 10);
+		    let usersProfile = await models.User.findOne(
+			    { where: { id: integerId } },
+			    { raw: true }
+		    );
+		   
+		return usersProfile;
+
+	    } catch(error) {
+		    console.log("ERROR: ", error);
+	    }
     },
     allUsers: (parent, args, context, info) => models.User.findAll()
   },

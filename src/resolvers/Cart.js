@@ -54,7 +54,10 @@ export default {
       if (!newItem) {
         return false;
       }
-      //   add cart_id to me query
+	    // Owner of shoe cannot buy his own shoe;
+      if (newItem.userId === userId) {
+	    return false 
+      }
       newItem.update({
         cartId: args.cartId
       });

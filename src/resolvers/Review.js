@@ -15,8 +15,8 @@ export default {
       models.Review.findAll({ where: { shoeId } })
   },
   Mutation: {
-    createReview: (parent, args, { models }) => {
-      let review = models.Review.create(args);
+    createReview: async (parent, args, { models }) => {
+      let review = await models.Review.create(args);
       if (!review) {
         return {
           ok: false,
