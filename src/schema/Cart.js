@@ -9,7 +9,7 @@ export default gql`
   }
 
   type Subscription {
-    newItemAdded(shoeId: Int!): Shoe
+    newItemAdded(cartId: Int!): Cart!
   }
 
   type ItemAddedToCartResponse {
@@ -30,6 +30,6 @@ export default gql`
 
   type Mutation {
     findOrCreateCart(userId: Int!): FindOrCreateCartResponse!
-    addItem(cartId: Int!, shoeId: Int!): Boolean
+    addItem(userId: Int!, shoeId: Int!): Cart!
   }
 `;

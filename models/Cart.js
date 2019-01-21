@@ -1,15 +1,17 @@
 export default (sequelize, DataTypes) => {
   const Cart = sequelize.define("cart", {
-	  items: DataTypes.INTEGER,
-	  total: DataTypes.DECIMAL(12, 2),
+    total: {
+      type: DataTypes.DECIMAL(12, 2),
+      defaultValue: 0
+    }
   });
-Cart.associate = (models) => {
-	Cart.belongsTo(models.User, {
-		foreignKey: {
-			name: "userId",
-			field: "user_id"
-		}
-	})
-}
+  Cart.associate = models => {
+    Cart.belongsTo(models.User, {
+      foreignKey: {
+        name: "userId",
+        field: "user_id"
+      }
+    });
+  };
   return Cart;
-}
+};

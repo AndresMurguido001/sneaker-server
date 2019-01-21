@@ -8,14 +8,14 @@ export default {
     newItemAdded: {
       subscribe: withFilter(
         (parent, args, context) => {
-		console.log("ARGS!: ", args);
           return pubsub.asyncIterator(NEW_ITEM_ADDED);
         },
         (payload, variables) => {
-		console.log("PAYLOAD", payload)
-		console.log("VARIABLES: ", variables);
-		return payload.cartId === variables.cartId 
-	}
+          console.log("PAYLOAD ID: ", payload);
+          console.log("Variables: ", variables);
+
+          return payload.newItemAdded.id === variables.cartId;
+        }
       )
     }
   },
@@ -28,10 +28,14 @@ export default {
       let numberOfItems = await models.Shoe.count({ where: { cartId: id } });
       return numberOfItems;
     },
-    total: ({ id }, args, { models, userId }) => {
-      // Add price fireld to shoes model
-	    let total = models.Shoe.sum('price', { where: { cartId: id }});
-	    return total;
+    total: async ({ id }, args, { models, userId }) => {
+      let total = await models.Shoe.sum(["price"], { where: { cartId: id } });
+      console.log("TOTAL CALCULATED: ", total);
+      if (total) {
+        return total;
+      } else {
+        return 0;
+      }
     }
   },
   Query: {
@@ -46,25 +50,29 @@ export default {
   },
   Mutation: {
     addItem: async (parent, args, { models, userId }, info) => {
+      let cart;
       const newItem = await models.Shoe.findOne({
-        where: {
-          id: args.shoeId
-        }
+        where: { id: args.shoeId }
       });
-      if (!newItem) {
+      if (newItem.userId === args.userId) {
         return false;
       }
-	    // Owner of shoe cannot buy his own shoe;
-      if (newItem.userId === userId) {
-	    return false 
+
+      const updated = await newItem.update({
+        cartId: args.userId
+      });
+
+      if (updated) {
+        cart = await models.Cart.findOne({
+          where: { userId: args.userId }
+        });
+
+        await pubsub.publish(NEW_ITEM_ADDED, { newItemAdded: cart.dataValues });
+
+        return cart;
       }
-      newItem.update({
-        cartId: args.cartId
-      });
-      await pubsub.publish(NEW_ITEM_ADDED, {
-        shoe: newItem
-      });
-      return true;
+
+      return new Error("check updated if block");
     }
   }
 };

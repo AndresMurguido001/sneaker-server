@@ -75,7 +75,7 @@ const apolloServer = new ApolloServer({
       "editor.theme": "light"
     }
   },
-	context: async ({ req }) => ({
+  context: async ({ req }) => ({
     models,
     user: req.user,
     SECRET,
