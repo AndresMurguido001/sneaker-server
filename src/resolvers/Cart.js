@@ -11,9 +11,6 @@ export default {
           return pubsub.asyncIterator(NEW_ITEM_ADDED);
         },
         (payload, variables) => {
-          console.log("PAYLOAD ID: ", payload);
-          console.log("Variables: ", variables);
-
           return payload.newItemAdded.id === variables.cartId;
         }
       )
@@ -30,7 +27,6 @@ export default {
     },
     total: async ({ id }, args, { models, userId }) => {
       let total = await models.Shoe.sum(["price"], { where: { cartId: id } });
-      console.log("TOTAL CALCULATED: ", total);
       if (total) {
         return total;
       } else {
@@ -69,7 +65,8 @@ export default {
 
         await pubsub.publish(NEW_ITEM_ADDED, { newItemAdded: cart.dataValues });
 
-        return cart;
+        return true;
+	
       }
 
       return new Error("check updated if block");
