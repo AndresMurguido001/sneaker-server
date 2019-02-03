@@ -1,0 +1,14 @@
+server {
+
+    location /subscriptions {
+        proxy_pass http://web:8080/subscriptions;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+    }
+
+    
+    location /graphql {
+        proxy_pass http://web:8080;
+    }
+}

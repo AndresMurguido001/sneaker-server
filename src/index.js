@@ -1,5 +1,5 @@
 import express from "express";
-import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
+import { makeExecutableSchema, ApolloServer } from "apollo-server-express";
 import { fileLoader, mergeTypes, mergeResolvers } from "merge-graphql-schemas";
 import path from "path";
 import jwt from "jsonwebtoken";
@@ -26,13 +26,14 @@ const resolvers = mergeResolvers(resolverFiles, { all: true });
 const SECRET = "ljasdASLDBlaskdljsdlasdjlAA";
 const SECRET2 = "laiusdbflasbdvlblaiuybdAKJDSL";
 
+const PORT = 8080;
+
 export const graphqlSchema = makeExecutableSchema({
   typeDefs,
   resolvers
 });
 
 let app = express();
-const ws = createServer(app);
 
 getModels().then(models => {
   if (!models) {
@@ -72,12 +73,11 @@ getModels().then(models => {
     resolvers,
     subscriptions: {
       path: "/subscriptions",
-      onConnect: async ({ token, refreshToken }, webSocket, context) => {
-        console.log("WS CONNECTED! from apollo server");
+      onConnect: async ({ token, refreshToken }, webSocket) => {
         if (token && refreshToken) {
           try {
             let { user } = jwt.verify(token, SECRET);
-            return { user, models };
+            return { models, user };
           } catch (err) {
             const newTokens = await refreshToken(
               token,
@@ -90,15 +90,6 @@ getModels().then(models => {
           }
         }
         return { models };
-      },
-      onDisconnect: (webSocket, context) => {
-        console.log("WS DISCONNECTED from apollo server");
-      }
-    },
-    playground: {
-      endpoint: `http://localhost:8080/graphql`,
-      settings: {
-        "editor.theme": "light"
       }
     },
     context: async ({ req }) => ({
@@ -110,21 +101,21 @@ getModels().then(models => {
       ownerLoader: new DataLoader(keys => batchOwners(keys, models)),
       reviewerLoader: new DataLoader(keys => batchReviewers(keys, models)),
       reviewLoader: new DataLoader(keys => batchReviews(keys, models))
-    })
+    }),
+    playground: true
   });
 
   apolloServer.applyMiddleware({
     app
   });
 
-  apolloServer.installSubscriptionHandlers(ws);
+  const server = createServer(app);
+
+  apolloServer.installSubscriptionHandlers(server);
 
   models.sequelize.sync().then(() => {
-    ws.listen(8080, x => {
-      console.log(
-        "Regular server running on http://localhost:8080",
-        ` and ${apolloServer.subscriptionsPath} `
-      );
+    server.listen(PORT, () => {
+      console.log("Ready");
     });
   });
 });

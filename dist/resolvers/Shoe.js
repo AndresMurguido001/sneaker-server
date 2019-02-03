@@ -37,8 +37,11 @@ exports.default = {
       let reviews = await reviewLoader.load(id);
       if (reviews.length > 0) {
         let ratings = reviews.map(rev => rev.starRating).filter(i => i > 0);
-        let sum = ratings.reduce((acc, cv) => acc + cv);
-        return sum / ratings.length;
+        let sum = ratings.length > 0 ? ratings.reduce((acc, cv) => acc + cv) : 0;
+        if (sum) {
+          return sum;
+        }
+        return 0;
       }
       return 0;
     }
@@ -85,7 +88,9 @@ exports.default = {
     signS3: async (parent, { filename, filetype }, { models }) => {
       const s3 = new _awsSdk2.default.S3({
         signatureVersion: "v4",
-        region: "us-east-1"
+        region: "us-east-1",
+        accessKeyId: process.env.ACCESS_KEY_ID,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY
       });
       let s3Bucket = process.env.BUCKET_NAME;
       const s3Params = {

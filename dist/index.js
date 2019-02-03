@@ -11,10 +11,6 @@ var _express2 = _interopRequireDefault(_express);
 
 var _apolloServerExpress = require("apollo-server-express");
 
-var _bodyParser = require("body-parser");
-
-var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
 var _mergeGraphqlSchemas = require("merge-graphql-schemas");
 
 var _path = require("path");
@@ -39,9 +35,9 @@ var _batchFunctions = require("./batchFunctions");
 
 var _http = require("http");
 
-var _subscriptionsTransportWs = require("subscriptions-transport-ws");
-
 var _graphql = require("graphql");
+
+var _subscriptionsTransportWs = require("subscriptions-transport-ws");
 
 var _models = require("./models");
 
@@ -50,8 +46,6 @@ var _models2 = _interopRequireDefault(_models);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //Subscriptions
-
-// import { ApolloServer } from 'apollo-server'
 const types = (0, _mergeGraphqlSchemas.fileLoader)(_path2.default.join(__dirname, "./schema"));
 const typeDefs = (0, _mergeGraphqlSchemas.mergeTypes)(types, { all: true });
 
@@ -61,13 +55,14 @@ const resolvers = (0, _mergeGraphqlSchemas.mergeResolvers)(resolverFiles, { all:
 const SECRET = "ljasdASLDBlaskdljsdlasdjlAA";
 const SECRET2 = "laiusdbflasbdvlblaiuybdAKJDSL";
 
+const PORT = 8080;
+
 const graphqlSchema = exports.graphqlSchema = (0, _apolloServerExpress.makeExecutableSchema)({
   typeDefs,
   resolvers
 });
 
 let app = (0, _express2.default)();
-const ws = (0, _http.createServer)(app);
 
 (0, _models2.default)().then(models => {
   if (!models) {
@@ -100,58 +95,45 @@ const ws = (0, _http.createServer)(app);
     typeDefs,
     resolvers,
     subscriptions: {
-      path: "/subscriptions"
-    },
-    playground: {
-      endpoint: `http://localhost:8080/graphql`,
-      settings: {
-        "editor.theme": "light"
+      path: "/subscriptions",
+      onConnect: async ({ token, refreshToken }, webSocket) => {
+        if (token && refreshToken) {
+          try {
+            let { user } = _jsonwebtoken2.default.verify(token, SECRET);
+            return { models, user };
+          } catch (err) {
+            const newTokens = await refreshToken(token, refreshToken, SECRET, SECRET2);
+            user = newTokens.user;
+            return { user, models };
+          }
+        }
+        return { models };
       }
     },
     context: async ({ req }) => ({
       models,
-      user: req.user,
+      user: req ? req.user : null,
       SECRET,
       SECRET2,
       likesLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchLikes)(keys, models)),
       ownerLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchOwners)(keys, models)),
       reviewerLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchReviewers)(keys, models)),
       reviewLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchReviews)(keys, models))
-    })
+    }),
+    playground: true
   });
 
   apolloServer.applyMiddleware({
-    app,
-    addUser
+    app
   });
 
-  // apolloServer.installSubscriptionHandlers(ws);
+  const server = (0, _http.createServer)(app);
+
+  apolloServer.installSubscriptionHandlers(server);
 
   models.sequelize.sync().then(() => {
-    ws.listen(8080, x => {
-      console.log("Regular server running on http://localhost:8080", ` and ${apolloServer.subscriptionsPath} `);
-      new _subscriptionsTransportWs.SubscriptionServer({
-        execute: _graphql.execute,
-        subscribe: _graphql.subscribe,
-        schema: graphqlSchema,
-        onConnect: async ({ token, refreshToken }, webSocket) => {
-          console.log("WS CONNECTED");
-          if (token && refreshToken) {
-            try {
-              let { user } = _jsonwebtoken2.default.verify(token, SECRET);
-              return { user, models };
-            } catch (err) {
-              const newTokens = await refreshToken(token, refreshToken, SECRET, SECRET2);
-              user = newTokens.user;
-              return { user, models };
-            }
-          }
-          return { models };
-        }
-      }, {
-        server: ws,
-        path: "/subscriptions"
-      });
+    server.listen(PORT, () => {
+      console.log("Ready");
     });
   });
 });

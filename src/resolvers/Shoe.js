@@ -78,7 +78,9 @@ export default {
     signS3: async (parent, { filename, filetype }, { models }) => {
       const s3 = new aws.S3({
         signatureVersion: "v4",
-        region: "us-east-1"
+        region: "us-east-1",
+        accessKeyId: process.env.ACCESS_KEY_ID,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY
       });
       let s3Bucket = process.env.BUCKET_NAME;
       const s3Params = {
