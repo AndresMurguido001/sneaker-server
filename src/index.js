@@ -71,6 +71,8 @@ getModels().then(models => {
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    introspection: false,
+    playground: false,
     subscriptions: {
       path: "/subscriptions",
       onConnect: async ({ token, refreshToken }, webSocket) => {
@@ -101,8 +103,7 @@ getModels().then(models => {
       ownerLoader: new DataLoader(keys => batchOwners(keys, models)),
       reviewerLoader: new DataLoader(keys => batchReviewers(keys, models)),
       reviewLoader: new DataLoader(keys => batchReviews(keys, models))
-    }),
-    playground: true
+    })
   });
 
   apolloServer.applyMiddleware({

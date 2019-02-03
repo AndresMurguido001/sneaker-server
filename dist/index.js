@@ -35,10 +35,6 @@ var _batchFunctions = require("./batchFunctions");
 
 var _http = require("http");
 
-var _graphql = require("graphql");
-
-var _subscriptionsTransportWs = require("subscriptions-transport-ws");
-
 var _models = require("./models");
 
 var _models2 = _interopRequireDefault(_models);
@@ -94,6 +90,8 @@ let app = (0, _express2.default)();
   const apolloServer = new _apolloServerExpress.ApolloServer({
     typeDefs,
     resolvers,
+    introspection: false,
+    playground: false,
     subscriptions: {
       path: "/subscriptions",
       onConnect: async ({ token, refreshToken }, webSocket) => {
@@ -119,8 +117,7 @@ let app = (0, _express2.default)();
       ownerLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchOwners)(keys, models)),
       reviewerLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchReviewers)(keys, models)),
       reviewLoader: new _dataloader2.default(keys => (0, _batchFunctions.batchReviews)(keys, models))
-    }),
-    playground: true
+    })
   });
 
   apolloServer.applyMiddleware({
